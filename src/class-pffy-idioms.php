@@ -5,7 +5,7 @@
  * class-pffy-idioms.php
  * PHP reference implementation of Pffy idioms
  *
- * @version 0.1
+ * @version 0.2
  * @license http://unlicense.org/ The Unlicense
  * @link https://github.com/pffy/php-idioms
  * @author The Pffy Authors
@@ -71,6 +71,11 @@ class Idioms {
     return trim(preg_replace('/[^[:ascii:]]/u', self::EMPTY_STRING, $str));
   }
 
+  // returns string after removing ascii characters
+  public static function noascii($str) {
+    return trim(preg_replace('/[[:ascii:]]/u', self::EMPTY_STRING, $str));
+  }
+
   // returns string without CRLF
   public static function noCRLF($str) {
      return str_replace(self::CRLF, self::EMPTY_STRING, $str);
@@ -85,6 +90,7 @@ class Idioms {
   public static function nolf($str) {
     return str_replace(self::LF, self::EMPTY_STRING, $str);
   }
+
 
 
   // PINYIN idioms
@@ -136,6 +142,21 @@ class Idioms {
   // returns a pinyin string with the umlaut-u normalized to uu
   public static function pumlaut($str) {
     return str_replace(explode(",", "u:,ǚ,ǘ,ǜ,ǖ,ü,v"), "uu", $str);
+  }
+
+  // returns a numbered pinyin strings into smaller units
+  // NOTE: low-cost, low-accuracy atomization
+  public static function atomize($str) {
+    return self::vacuum(preg_replace('/(\w{1,6}[1-5]{1})/u', '${1} ', $str));
+  }
+
+
+  // MULTIBYTE IDIOMS
+
+  // returns a string exactly one space between multibyte characters
+  public static function aerate($str) {
+    $json = str_replace("\u", " \u", json_encode(array($str)));
+    return self::vacuum(json_decode($json)[0]);
   }
 
 
